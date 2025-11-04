@@ -24,12 +24,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://gutendex.com/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"https://gutendex.com/\"")
         }
     }
     compileOptions {
@@ -43,6 +47,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -57,6 +62,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(libs.koin.android)
+
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.converter)
+    implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)
     testImplementation(libs.koin.test)
