@@ -12,6 +12,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 
+val json = Json {
+    ignoreUnknownKeys = true
+    explicitNulls = false
+    isLenient = true
+}
 
 fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
     HttpLoggingInterceptor { Log.d("OkHttp", it) }.apply {
@@ -34,12 +39,14 @@ fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
     Retrofit.Builder()
         .baseUrl(BuildConfig.BASE_URL)
         .client(okHttpClient)
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
+fun getBooksApi(retrofit: Retrofit): BooksApi = retrofit.create(BooksApi::class.java)
 
 val networkModule = module {
     singleOf(::provideHttpLoggingInterceptor)
     singleOf(::provideOkHttpClient)
     singleOf(::provideRetrofit)
+    singleOf(::getBooksApi)
 }
