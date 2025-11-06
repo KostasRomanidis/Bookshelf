@@ -3,4 +3,5 @@
     <string name="book_author_unknown">Unknown</string>
     <string name="book_author_lifespan">Author lifespan</string>
     <string name="book_primary_subject">Subject</string>
+    <string name="book_details_title">Book Details</string>
 </resources>

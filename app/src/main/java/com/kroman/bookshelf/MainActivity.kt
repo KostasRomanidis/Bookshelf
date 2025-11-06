@@ -16,8 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.kroman.bookshelf.navigation.BookDetails
 import com.kroman.bookshelf.navigation.BookshelfNavHost
 import com.kroman.bookshelf.ui.theme.BookshelfTheme
 
@@ -29,15 +31,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             BookshelfTheme {
                 val navController = rememberNavController()
-                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                val backStackEntry by navController.currentBackStackEntryAsState()
+                val destination = backStackEntry?.destination
 
-                val showBackButton = currentBackStackEntry?.destination?.route?.contains("BookDetails") == true
-
+                val showBackButton = destination?.hasRoute<BookDetails>() == true
+                val title = when {
+                    destination?.hasRoute<BookDetails>() == true -> stringResource(R.string.book_details_title)
+                    else -> stringResource(R.string.app_name)
+                }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         CenterAlignedTopAppBar(
-                            title = { Text(text = stringResource(R.string.app_name)) },
+                            title = { Text(text = title) },
                             navigationIcon = {
                                 if (showBackButton) {
                                     IconButton(onClick = { navController.navigateUp() }) {
