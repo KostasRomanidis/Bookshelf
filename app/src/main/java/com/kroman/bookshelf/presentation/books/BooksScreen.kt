@@ -1,5 +1,6 @@
 package com.kroman.bookshelf.presentation.books
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,12 +39,22 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun BooksScreen(
     modifier: Modifier = Modifier,
-    viewModel: BooksViewModel = koinViewModel()
+    viewModel: BooksViewModel = koinViewModel(),
+    onNavigateToDetails: (BookItem) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBooks()
+    }
+
     when (val state = uiState) {
         is BooksUiState.Success -> {
-            BooksList(modifier = modifier, books = state.books)
+            BooksList(
+                modifier = modifier,
+                books = state.books,
+                onNavigateToDetails = onNavigateToDetails,
+            )
         }
 
         BooksUiState.Loading -> Loading()
@@ -93,7 +106,8 @@ private fun ErrorScreenPreview() {
 @Composable
 private fun BooksList(
     modifier: Modifier = Modifier,
-    books: List<BookItem>
+    books: List<BookItem>,
+    onNavigateToDetails: (BookItem) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier
@@ -103,17 +117,23 @@ private fun BooksList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(books.size) { index ->
-            BookListItem(bookItem = books[index])
+            BookListItem(
+                bookItem = books[index],
+                onBookClicked = onNavigateToDetails,
+            )
         }
     }
 }
 
 @Composable
 private fun BookListItem(
-    bookItem: BookItem
+    bookItem: BookItem,
+    onBookClicked: (BookItem) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onBookClicked(bookItem) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
@@ -135,7 +155,7 @@ private fun BookListItem(
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (bookItem.authors.isNotEmpty()) bookItem.authors[0].name else "Unknown",
+                text = if (bookItem.authors.isNotEmpty()) bookItem.authors[0].name else stringResource(R.string.book_author_unknown),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 20.sp
                 ),
@@ -151,7 +171,7 @@ private fun BookListItem(
 @Composable
 private fun BookListItemPreview() {
     BookListItem(
-        BookItem(
+        bookItem = BookItem(
             id = 10,
             title = "Book Title",
             authors = listOf(
@@ -164,8 +184,8 @@ private fun BookListItemPreview() {
             subjects = emptyList(),
             languages = emptyList(),
             downloadCount = 100
-        )
-    )
+        ),
+    ) {}
 }
 
 @Preview(showBackground = true)
@@ -173,7 +193,7 @@ private fun BookListItemPreview() {
 private fun BooksListPreview() {
     BooksList(
         modifier = Modifier,
-        listOf(
+        books = listOf(
             BookItem(
                 id = 1,
                 title = "Book Title",
@@ -230,8 +250,7 @@ private fun BooksListPreview() {
                 languages = emptyList(),
                 downloadCount = 100
             )
-        )
+        ),
+        onNavigateToDetails = {}
     )
 }
-
-

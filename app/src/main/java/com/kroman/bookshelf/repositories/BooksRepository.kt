@@ -12,6 +12,7 @@ import java.io.IOException
 
 interface BooksRepository {
     suspend fun getBooks(): Result<List<BookItem>>
+    suspend fun getBook(id: Int): Result<BookItem>
 }
 
 class BooksRepositoryImpl(
@@ -21,6 +22,17 @@ class BooksRepositoryImpl(
         return try {
             val response = booksRemoteDataSource.get()
             handleResponse(response) { it.results.map { dto -> dto.mapToDomain() } }
+        } catch (e: IOException) {
+            Result.Error(exception = e)
+        } catch (e: HttpException) {
+            Result.Error(exception = e)
+        }
+    }
+
+    override suspend fun getBook(id: Int): Result<BookItem> {
+        return try {
+            val response = booksRemoteDataSource.getBook(id)
+            handleResponse(response) { it.mapToDomain() }
         } catch (e: IOException) {
             Result.Error(exception = e)
         } catch (e: HttpException) {

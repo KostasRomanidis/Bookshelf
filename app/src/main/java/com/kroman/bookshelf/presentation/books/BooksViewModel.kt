@@ -25,10 +25,6 @@ class BooksViewModel(
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    init {
-        loadBooks()
-    }
-
     fun loadBooks() {
         viewModelScope.launch(dispatcher) {
             when (val result = getBooksUseCase.execute()) {
