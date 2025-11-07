@@ -1,39 +1,22 @@
 package com.kroman.bookshelf.presentation.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kroman.bookshelf.R
 import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.PersonItem
+import com.kroman.bookshelf.presentation.ui.components.BookTile
+import com.kroman.bookshelf.presentation.ui.components.ErrorScreen
+import com.kroman.bookshelf.presentation.ui.components.Loading
 import com.kroman.bookshelf.presentation.viewmodels.BooksUiState
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -51,6 +34,7 @@ fun BooksScreen(
     }
 
     when (val state = uiState) {
+        BooksUiState.Loading -> Loading()
         is BooksUiState.Success -> {
             BooksList(
                 modifier = modifier,
@@ -58,52 +42,9 @@ fun BooksScreen(
                 onNavigateToDetails = onNavigateToDetails,
             )
         }
-
-        BooksUiState.Loading -> Loading()
         is BooksUiState.Error -> ErrorScreen(errorMessage = state.message)
     }
 }
-
-@Composable
-private fun Loading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(modifier = Modifier.testTag("loading"))
-    }
-}
-
-@Composable
-private fun ErrorScreen(errorMessage: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(size = 48.dp),
-                painter = painterResource(id = R.drawable.warning_icon),
-                contentDescription = "Warning Icon",
-                tint = Color.Red
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = errorMessage, color = Color.Red, fontSize = 16.sp)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ErrorScreenPreview() {
-    ErrorScreen(errorMessage = "Something went wrong")
-}
-
 
 @Composable
 private fun BooksList(
@@ -115,11 +56,11 @@ private fun BooksList(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(books.size) { index ->
-            BookListItem(
+            BookTile(
                 bookItem = books[index],
                 onBookClicked = onNavigateToDetails,
             )
@@ -127,68 +68,6 @@ private fun BooksList(
     }
 }
 
-@Composable
-private fun BookListItem(
-    bookItem: BookItem,
-    onBookClicked: (BookItem) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onBookClicked(bookItem) },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        ) {
-            Text(
-                text = bookItem.title,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (bookItem.authors.isNotEmpty()) bookItem.authors[0].name else stringResource(R.string.book_author_unknown),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = 20.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-// previews
-
-@Preview(showBackground = true)
-@Composable
-private fun BookListItemPreview() {
-    BookListItem(
-        bookItem = BookItem(
-            id = 10,
-            title = "Book Title",
-            authors = listOf(
-                PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
-                )
-            ),
-            subjects = emptyList(),
-            languages = emptyList(),
-            downloadCount = 100
-        ),
-    ) {}
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -238,20 +117,6 @@ private fun BooksListPreview() {
                 languages = emptyList(),
                 downloadCount = 100
             ),
-            BookItem(
-                id = 4,
-                title = "Book Title",
-                authors = listOf(
-                    PersonItem(
-                        name = "Author's Name",
-                        yearOfBirth = 1984,
-                        yearOfDeath = null
-                    )
-                ),
-                subjects = emptyList(),
-                languages = emptyList(),
-                downloadCount = 100
-            )
         ),
         onNavigateToDetails = {}
     )

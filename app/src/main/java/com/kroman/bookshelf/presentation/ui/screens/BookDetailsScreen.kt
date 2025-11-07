@@ -2,7 +2,6 @@ package com.kroman.bookshelf.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kroman.bookshelf.R
 import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.PersonItem
+import com.kroman.bookshelf.presentation.ui.components.ErrorScreen
+import com.kroman.bookshelf.presentation.ui.components.Loading
 import com.kroman.bookshelf.presentation.viewmodels.BookDetailsUiState
 import com.kroman.bookshelf.presentation.viewmodels.BookDetailsViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -50,50 +51,43 @@ fun BookDetailsScreen(
     }
 
     when (val state = uiState) {
+        BookDetailsUiState.Loading -> Loading()
         is BookDetailsUiState.Success -> BookDetails(item = state.book)
-        is BookDetailsUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.message)
-            }
-        }
-
-        BookDetailsUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
+        is BookDetailsUiState.Error -> ErrorScreen(errorMessage = state.message)
     }
 }
+
 
 @Composable
 fun BookDetails(item: BookItem) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .verticalScroll(rememberScrollState())
+            .background(color = MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
+            shape = RoundedCornerShape(size = 12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
             ),
-            border = CardDefaults.outlinedCardBorder(),
-            shape = MaterialTheme.shapes.large
         ) {
             Column(
                 modifier = Modifier
                     .wrapContentSize()
                     .padding(all = 16.dp)
-                    .background(color = Color.White)
             ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
+                        fontSize = 20.sp
                     ),
                     color = MaterialTheme.colorScheme.onSurface
                 )

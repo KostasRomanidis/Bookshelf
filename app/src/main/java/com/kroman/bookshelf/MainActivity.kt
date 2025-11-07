@@ -6,21 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kroman.bookshelf.navigation.BookDetails
 import com.kroman.bookshelf.navigation.BookshelfNavHost
+import com.kroman.bookshelf.presentation.ui.components.BookshelfTopAppBar
 import com.kroman.bookshelf.presentation.ui.theme.BookshelfTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,18 +38,10 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        CenterAlignedTopAppBar(
-                            title = { Text(text = title) },
-                            navigationIcon = {
-                                if (showBackButton) {
-                                    IconButton(onClick = { navController.navigateUp() }) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.arrow_back_icon),
-                                            contentDescription = "Back"
-                                        )
-                                    }
-                                }
-                            }
+                        BookshelfTopAppBar(
+                            title = title,
+                            showBackButton = showBackButton,
+                            navController = navController
                         )
                     }
                 ) { paddingValues ->
