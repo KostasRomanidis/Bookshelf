@@ -17,7 +17,6 @@ data class BookResponse(
     val title: String,
     val subjects: List<String>,
     val authors: List<PersonResponse>,
-    val summaries: List<String>,
     val translators: List<PersonResponse>,
     val languages: List<String>,
     @SerialName("download_count") val downloadCount: Int

@@ -6,8 +6,8 @@ import com.kroman.bookshelf.repositories.BooksRepository
 import com.kroman.bookshelf.repositories.BooksRepositoryImpl
 import com.kroman.bookshelf.sources.BooksRemoteSource
 import com.kroman.bookshelf.sources.BooksRemoteSourceImpl
-import com.kroman.bookshelf.usecases.GetBookDetailsUC
-import com.kroman.bookshelf.usecases.GetBookDetailsUCImpl
+import com.kroman.bookshelf.usecases.GetBookDetailsUseCase
+import com.kroman.bookshelf.usecases.GetBookDetailsUseCaseImpl
 import com.kroman.bookshelf.usecases.GetBooksUseCase
 import com.kroman.bookshelf.usecases.GetBooksUseCaseImpl
 import org.koin.core.module.dsl.bind
@@ -20,13 +20,13 @@ val bookshelfModule = module {
     singleOf(::BooksRemoteSourceImpl) { bind<BooksRemoteSource>() }
     factoryOf(::BooksRepositoryImpl) { bind<BooksRepository>() }
     factoryOf(::GetBooksUseCaseImpl) { bind<GetBooksUseCase>() }
-    factoryOf(::GetBookDetailsUCImpl) { bind<GetBookDetailsUC>() }
+    factoryOf(::GetBookDetailsUseCaseImpl) { bind<GetBookDetailsUseCase>() }
 
     viewModel {
         BooksViewModel(getBooksUseCase = get())
     }
 
     viewModel { (bookId: Int) ->
-        BookDetailsViewModel(getBookDetailsUC = get(), bookId = bookId)
+        BookDetailsViewModel(getBookDetailsUseCase = get(), bookId = bookId)
     }
 }

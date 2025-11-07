@@ -67,8 +67,8 @@ fun BookResponse.mapToDomain(): BookItem = BookItem(
     title = this.title,
     authors = this.authors.map { it.mapToDomain() },
     subjects = this.subjects,
-    languages = this.languages,
-    downloadCount = this.downloadCount,
+    languages = languages,
+    downloadCount = downloadCount,
 )
 
 fun PersonResponse.mapToDomain(): PersonItem = PersonItem(

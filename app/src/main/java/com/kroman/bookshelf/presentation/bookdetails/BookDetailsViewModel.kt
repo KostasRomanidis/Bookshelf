@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kroman.bookshelf.domain.data.BookItem
 import com.kroman.bookshelf.domain.data.Result
-import com.kroman.bookshelf.usecases.GetBookDetailsUC
+import com.kroman.bookshelf.usecases.GetBookDetailsUseCase
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,20 +19,17 @@ sealed interface BookDetailsUiState {
 
 class BookDetailsViewModel(
     private val bookId: Int,
-    private val getBookDetailsUC: GetBookDetailsUC,
+    private val getBookDetailsUseCase: GetBookDetailsUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
     val uiState: StateFlow<BookDetailsUiState> = _uiState
 
-    init {
-        getBookDetails()
-    }
-
     fun getBookDetails() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             _uiState.value = BookDetailsUiState.Loading
-            when (val result = getBookDetailsUC.execute(bookId)) {
+            when (val result = getBookDetailsUseCase.execute(bookId)) {
                 is Result.Success -> {
                     _uiState.value = BookDetailsUiState.Success(result.data)
                 }
