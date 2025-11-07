@@ -1,12 +1,12 @@
 package com.kroman.bookshelf.viewmodels
 
 import app.cash.turbine.test
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.domain.data.PersonItem
-import com.kroman.bookshelf.domain.data.Result
-import com.kroman.bookshelf.presentation.bookdetails.BookDetailsUiState
-import com.kroman.bookshelf.presentation.bookdetails.BookDetailsViewModel
-import com.kroman.bookshelf.usecases.GetBookDetailsUseCase
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.PersonItem
+import com.kroman.bookshelf.domain.model.Result
+import com.kroman.bookshelf.presentation.viewmodels.BookDetailsUiState
+import com.kroman.bookshelf.presentation.viewmodels.BookDetailsViewModel
+import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify

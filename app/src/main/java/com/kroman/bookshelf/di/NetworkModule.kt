@@ -1,7 +1,8 @@
-package com.kroman.bookshelf.network
+package com.kroman.bookshelf.di
 
 import android.util.Log
 import com.kroman.bookshelf.BuildConfig
+import com.kroman.bookshelf.data.remote.api.BooksApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -11,6 +12,13 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
+
+val networkModule = module {
+    singleOf(::provideHttpLoggingInterceptor)
+    singleOf(::provideOkHttpClient)
+    singleOf(::provideRetrofit)
+    singleOf(::getBooksApi)
+}
 
 val json = Json {
     ignoreUnknownKeys = true
@@ -44,9 +52,3 @@ fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
 
 fun getBooksApi(retrofit: Retrofit): BooksApi = retrofit.create(BooksApi::class.java)
 
-val networkModule = module {
-    singleOf(::provideHttpLoggingInterceptor)
-    singleOf(::provideOkHttpClient)
-    singleOf(::provideRetrofit)
-    singleOf(::getBooksApi)
-}

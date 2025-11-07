@@ -3,13 +3,11 @@ package com.kroman.bookshelf.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
-import com.kroman.bookshelf.presentation.bookdetails.BookDetailsScreen
-import com.kroman.bookshelf.presentation.books.BooksScreen
+import com.kroman.bookshelf.presentation.ui.screens.BookDetailsScreen
+import com.kroman.bookshelf.presentation.ui.screens.BooksScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

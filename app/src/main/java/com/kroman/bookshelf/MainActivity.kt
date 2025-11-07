@@ -21,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kroman.bookshelf.navigation.BookDetails
 import com.kroman.bookshelf.navigation.BookshelfNavHost
-import com.kroman.bookshelf.ui.theme.BookshelfTheme
+import com.kroman.bookshelf.presentation.ui.theme.BookshelfTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {

@@ -1,8 +1,10 @@
 package com.kroman.bookshelf.usecases
 
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.domain.data.Result
-import com.kroman.bookshelf.repositories.BooksRepository
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.Result
+import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
+import com.kroman.bookshelf.domain.usecases.GetBooksUseCaseImpl
+import com.kroman.bookshelf.domain.repositories.BooksRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified

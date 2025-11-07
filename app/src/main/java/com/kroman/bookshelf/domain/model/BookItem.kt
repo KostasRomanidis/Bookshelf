@@ -1,6 +1,4 @@
-package com.kroman.bookshelf.domain.data
-
-import kotlinx.serialization.SerialName
+package com.kroman.bookshelf.domain.model
 
 data class BookItem(
     val id: Int,

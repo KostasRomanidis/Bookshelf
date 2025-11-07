@@ -1,12 +1,13 @@
 package com.kroman.bookshelf.repositories
 
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.domain.data.PersonItem
-import com.kroman.bookshelf.domain.data.Result
-import com.kroman.bookshelf.network.BookResponse
-import com.kroman.bookshelf.network.BooksResponse
-import com.kroman.bookshelf.network.PersonResponse
-import com.kroman.bookshelf.sources.BooksRemoteSource
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.PersonItem
+import com.kroman.bookshelf.domain.model.Result
+import com.kroman.bookshelf.data.remote.responses.BookResponse
+import com.kroman.bookshelf.data.remote.responses.BooksResponse
+import com.kroman.bookshelf.data.remote.responses.PersonResponse
+import com.kroman.bookshelf.data.remote.sources.BooksRemoteSource
+import com.kroman.bookshelf.data.repositories.BooksRepositoryImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified

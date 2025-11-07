@@ -1,4 +1,4 @@
-package com.kroman.bookshelf.domain.data
+package com.kroman.bookshelf.domain.model
 
 sealed class Result<out T> {
     data class Success<T>(val data: T) : Result<T>()

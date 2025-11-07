@@ -1,15 +1,8 @@
-package com.kroman.bookshelf.network
+package com.kroman.bookshelf.data.remote.responses
 
+import com.kroman.bookshelf.domain.model.BookItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class BooksResponse(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<BookResponse>
-)
 
 @Serializable
 data class BookResponse(
@@ -22,10 +15,12 @@ data class BookResponse(
     @SerialName("download_count") val downloadCount: Int
 )
 
-@Serializable
-data class PersonResponse(
-    @SerialName("birth_year") val yearOfBirth: Int?,
-    @SerialName("death_year") val yearOfDeath: Int?,
-    val name: String
-)
 
+fun BookResponse.mapToDomain(): BookItem = BookItem(
+    id = this.id,
+    title = this.title,
+    authors = this.authors.map { it.mapToDomain() },
+    subjects = this.subjects,
+    languages = languages,
+    downloadCount = downloadCount,
+)

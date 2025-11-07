@@ -1,4 +1,4 @@
-package com.kroman.bookshelf.ui.theme
+package com.kroman.bookshelf.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

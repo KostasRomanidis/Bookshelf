@@ -1,10 +1,10 @@
-package com.kroman.bookshelf.presentation.bookdetails
+package com.kroman.bookshelf.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.domain.data.Result
-import com.kroman.bookshelf.usecases.GetBookDetailsUseCase
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.Result
+import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

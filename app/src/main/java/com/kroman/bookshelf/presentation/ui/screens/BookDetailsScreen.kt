@@ -1,4 +1,4 @@
-package com.kroman.bookshelf.presentation.bookdetails
+package com.kroman.bookshelf.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kroman.bookshelf.R
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.domain.data.PersonItem
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.PersonItem
+import com.kroman.bookshelf.presentation.viewmodels.BookDetailsUiState
+import com.kroman.bookshelf.presentation.viewmodels.BookDetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

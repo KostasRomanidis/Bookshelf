@@ -1,15 +1,15 @@
 package com.kroman.bookshelf.di
 
-import com.kroman.bookshelf.presentation.bookdetails.BookDetailsViewModel
-import com.kroman.bookshelf.presentation.books.BooksViewModel
-import com.kroman.bookshelf.repositories.BooksRepository
-import com.kroman.bookshelf.repositories.BooksRepositoryImpl
-import com.kroman.bookshelf.sources.BooksRemoteSource
-import com.kroman.bookshelf.sources.BooksRemoteSourceImpl
-import com.kroman.bookshelf.usecases.GetBookDetailsUseCase
-import com.kroman.bookshelf.usecases.GetBookDetailsUseCaseImpl
-import com.kroman.bookshelf.usecases.GetBooksUseCase
-import com.kroman.bookshelf.usecases.GetBooksUseCaseImpl
+import com.kroman.bookshelf.presentation.viewmodels.BookDetailsViewModel
+import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
+import com.kroman.bookshelf.domain.repositories.BooksRepository
+import com.kroman.bookshelf.data.remote.sources.BooksRemoteSource
+import com.kroman.bookshelf.data.remote.sources.BooksRemoteSourceImpl
+import com.kroman.bookshelf.data.repositories.BooksRepositoryImpl
+import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
+import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
+import com.kroman.bookshelf.domain.usecases.GetBooksUseCaseImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

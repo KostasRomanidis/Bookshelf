@@ -1,7 +1,7 @@
 package com.kroman.bookshelf.usecases
 
-import com.kroman.bookshelf.domain.data.BookItem
-import com.kroman.bookshelf.repositories.BooksRepository
+import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.repositories.BooksRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
@@ -10,7 +10,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertSame
-import com.kroman.bookshelf.domain.data.Result
+import com.kroman.bookshelf.domain.model.Result
+import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCaseImpl
 
 class GetBookDetailsUseCaseTests {
 

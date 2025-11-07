@@ -1,8 +1,9 @@
 package com.kroman.bookshelf.sources
 
-import com.kroman.bookshelf.network.BookResponse
-import com.kroman.bookshelf.network.BooksApi
-import com.kroman.bookshelf.network.BooksResponse
+import com.kroman.bookshelf.data.remote.responses.BookResponse
+import com.kroman.bookshelf.data.remote.api.BooksApi
+import com.kroman.bookshelf.data.remote.responses.BooksResponse
+import com.kroman.bookshelf.data.remote.sources.BooksRemoteSourceImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
