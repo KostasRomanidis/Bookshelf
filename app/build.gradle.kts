@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.retrofit.kotlinx.converter)
     implementation(libs.okhttp.logging.interceptor)
 
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
     testImplementation(libs.junit)
     testImplementation(libs.koin.test)
     testImplementation(libs.mockk)

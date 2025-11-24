@@ -36,7 +36,7 @@ class BookDetailsViewModel(
 
                 is Result.Error -> {
                     _uiState.value =
-                        BookDetailsUiState.Error(result.exception?.message ?: "Unknown error")
+                        BookDetailsUiState.Error(result.exception.message ?: "Unknown error")
                 }
             }
         }
