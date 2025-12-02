@@ -24,11 +24,12 @@ import com.kroman.bookshelf.domain.model.PersonItem
 
 @Composable
 fun BookTile(
+    modifier: Modifier = Modifier,
     bookItem: BookItem,
     onBookClicked: (BookItem) -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { onBookClicked(bookItem) },
         shape = RoundedCornerShape(size = 12.dp),

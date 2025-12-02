@@ -20,9 +20,11 @@ import androidx.compose.ui.unit.sp
 import com.kroman.bookshelf.R
 
 @Composable
-fun ErrorScreen(errorMessage: String) {
+fun ErrorScreen(
+    modifier: Modifier = Modifier,
+    errorMessage: String) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
