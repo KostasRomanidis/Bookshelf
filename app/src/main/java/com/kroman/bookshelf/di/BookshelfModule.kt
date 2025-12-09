@@ -1,5 +1,7 @@
 package com.kroman.bookshelf.di
 
+import com.kroman.bookshelf.data.local.sources.BooksLocalSource
+import com.kroman.bookshelf.data.local.sources.BooksLocalSourceImpl
 import com.kroman.bookshelf.data.remote.sources.BooksPagingSource
 import com.kroman.bookshelf.presentation.viewmodels.BookDetailsViewModel
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
@@ -22,6 +24,7 @@ import org.koin.dsl.module
 val bookshelfModule = module {
     // sources
     singleOf(::BooksRemoteSourceImpl) { bind<BooksRemoteSource>() }
+    singleOf(::BooksLocalSourceImpl) { bind<BooksLocalSource>() }
     factoryOf(::BooksPagingSource)
 
     // repositories
