@@ -14,7 +14,7 @@ import com.kroman.bookshelf.data.local.entity.PersonType
 @Dao
 interface BookDao {
     @Transaction
-    @Query("SELECT * FROM books ORDER BY downloadCount DESC")
+    @Query("SELECT * FROM books ORDER BY serverOrder ASC")
     fun getAllBooksPaged(): PagingSource<Int, BookEntity>
 
     @Transaction

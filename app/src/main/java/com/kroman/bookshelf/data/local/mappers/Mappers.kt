@@ -9,12 +9,13 @@ import com.kroman.bookshelf.data.remote.responses.PersonResponse
 import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.PersonItem
 
-fun BookResponse.toEntity(): BookEntity = BookEntity(
+fun BookResponse.toEntity(serverOrder: Long): BookEntity = BookEntity(
     id = id,
     title = title,
     subjects = subjects.joinToString(","),
     languages = languages.joinToString(","),
     downloadCount = downloadCount,
+    serverOrder = serverOrder
 )
 
 fun PersonResponse.toEntity(): PersonEntity = PersonEntity(

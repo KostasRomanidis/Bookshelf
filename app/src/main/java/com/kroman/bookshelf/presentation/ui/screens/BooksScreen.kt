@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -50,11 +51,13 @@ private fun BooksList(
     pagedBooks: LazyPagingItems<BookItem>,
     onNavigateToDetails: (BookItem) -> Unit,
 ) {
+    val lazyListState = rememberLazyListState()
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 4.dp),
+        state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(

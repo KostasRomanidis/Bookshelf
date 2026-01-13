@@ -20,7 +20,7 @@ import java.io.IOException
 class BooksRemoteMediator(
     private val booksRemoteSource: BooksRemoteSource,
     private val database: BookshelfDatabase
-): RemoteMediator<Int, BookEntity>() {
+) : RemoteMediator<Int, BookEntity>() {
     private val bookDao = database.bookDao()
     private val remoteKeyDao = database.remoteKeyDao()
 
@@ -30,15 +30,26 @@ class BooksRemoteMediator(
         state: PagingState<Int, BookEntity>
     ): MediatorResult {
         return try {
-            val page = when(loadType) {
-                LoadType.REFRESH -> 1
+            val page = when (loadType) {
+                LoadType.REFRESH -> {
+                    val anchorPos = state.anchorPosition
+                    val closestId = anchorPos?.let { state.closestItemToPosition(it)?.id }
+                    val key = closestId?.let { remoteKeyDao.getRemoteKey(it) }
+                    key?.nextKey?.minus(1) ?: 1
+                }
+
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
-                    val remoteKey = state.lastItemOrNull()?.let { book ->
-                        remoteKeyDao.getRemoteKey(book.id)
-                    }
-                    remoteKey?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKey != null)
+                    val lastItem = state.lastItemOrNull()
+                        ?: return MediatorResult.Success(endOfPaginationReached = true)
 
+                    val remoteKey = remoteKeyDao.getRemoteKey(lastItem.id)
+                        ?: return MediatorResult.Success(endOfPaginationReached = true)
+
+                    val nextKey = remoteKey.nextKey
+                        ?: return MediatorResult.Success(endOfPaginationReached = true)
+
+                    nextKey
                 }
             }
 
@@ -69,9 +80,10 @@ class BooksRemoteMediator(
                     )
                 }
                 remoteKeyDao.insertAll(remoteKeys)
-
-                books.forEach { bookResponse ->
-                    val bookEntity = bookResponse.toEntity()
+                val baseOrder = (page - 1L) * state.config.pageSize.toLong()
+                books.forEachIndexed { index, bookResponse ->
+                    val serverOrder = baseOrder + index.toLong()
+                    val bookEntity = bookResponse.toEntity(serverOrder)
                     val authorEntities = bookResponse.authors.map { it.toEntity() }
                     val translatorEntities = bookResponse.translators.map { it.toEntity() }
 
