@@ -13,8 +13,15 @@ import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
 import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
 import com.kroman.bookshelf.domain.usecases.GetBooksUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCase
+import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetPagedBooksUseCase
 import com.kroman.bookshelf.domain.usecases.GetPagedBooksUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.ObserveIsFavoriteUseCase
+import com.kroman.bookshelf.domain.usecases.ObserveIsFavoriteUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.ToggleFavoriteBookUseCase
+import com.kroman.bookshelf.domain.usecases.ToggleFavoriteBookUseCaseImpl
+import com.kroman.bookshelf.presentation.viewmodels.FavoritesViewModel
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -34,13 +41,28 @@ val bookshelfModule = module {
     factoryOf(::GetBooksUseCaseImpl) { bind<GetBooksUseCase>() }
     factoryOf(::GetPagedBooksUseCaseImpl) { bind<GetPagedBooksUseCase>() }
     factoryOf(::GetBookDetailsUseCaseImpl) { bind<GetBookDetailsUseCase>() }
+    factoryOf(::GetFavoriteBooksPagingUseCaseImpl) { bind<GetFavoriteBooksPagingUseCase>() }
+    factoryOf(::ObserveIsFavoriteUseCaseImpl) { bind<ObserveIsFavoriteUseCase>() }
+    factoryOf(::ToggleFavoriteBookUseCaseImpl) { bind<ToggleFavoriteBookUseCase>() }
 
     // viewModels
     viewModel {
-        BooksViewModel(getPagedBooksUseCase = get())
+        BooksViewModel(getPagedBooksUseCase = get(), toggleFavoriteBookUseCase = get())
     }
 
     viewModel { (bookId: Int) ->
-        BookDetailsViewModel(getBookDetailsUseCase = get(), bookId = bookId)
+        BookDetailsViewModel(
+            bookId = bookId,
+            getBookDetailsUseCase = get(),
+            toggleFavoriteBookUseCase = get(),
+            observeIsFavoriteUseCase = get()
+        )
+    }
+
+    viewModel {
+        FavoritesViewModel(
+            getFavoriteBooksPagingUseCase = get(),
+            toggleFavoriteBookUseCase = get(),
+        )
     }
 }

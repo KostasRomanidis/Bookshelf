@@ -10,6 +10,7 @@ import com.kroman.bookshelf.data.local.entity.BookEntity
 import com.kroman.bookshelf.data.local.entity.BookPersonCrossRef
 import com.kroman.bookshelf.data.local.entity.PersonEntity
 import com.kroman.bookshelf.data.local.entity.PersonType
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookDao {
@@ -18,8 +19,21 @@ interface BookDao {
     fun getAllBooksPaged(): PagingSource<Int, BookEntity>
 
     @Transaction
+    @Query("SELECT * FROM books WHERE isFavorite = 1 ORDER BY serverOrder ASC")
+    fun getFavoriteBooksPaged(): PagingSource<Int, BookEntity>
+
+    @Transaction
     @Query("SELECT * FROM books WHERE id = :bookId")
     suspend fun getBookById(bookId: Int): BookEntity?
+
+    @Query("SELECT isFavorite FROM books WHERE id = :bookId")
+    suspend fun getIsFavorite(bookId: Int): Boolean?
+
+    @Query("SELECT isFavorite FROM books WHERE id = :bookId")
+    fun observeIsFavorite(bookId: Int): Flow<Boolean?>
+
+    @Query("UPDATE books SET isFavorite = :value WHERE id = :bookId")
+    suspend fun updateFavorite(bookId: Int, value: Boolean)
 
     @Query(
         """
@@ -51,7 +65,8 @@ interface BookDao {
         authors: List<PersonEntity>,
         translators: List<PersonEntity>
     ) {
-        insertBooks(listOf(book))
+        val preservedFavorite = getIsFavorite(book.id) ?: false
+        insertBooks(listOf(book.copy(isFavorite = preservedFavorite)))
 
         val authorRefs = mutableListOf<BookPersonCrossRef>()
         authors.forEach { author ->

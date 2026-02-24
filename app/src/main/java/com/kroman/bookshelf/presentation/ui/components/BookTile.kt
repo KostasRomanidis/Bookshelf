@@ -1,17 +1,22 @@
 package com.kroman.bookshelf.presentation.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +31,8 @@ import com.kroman.bookshelf.domain.model.PersonItem
 fun BookTile(
     modifier: Modifier = Modifier,
     bookItem: BookItem,
-    onBookClicked: (BookItem) -> Unit
+    onBookClicked: (BookItem) -> Unit,
+    onToggleFavorite: (Int) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -44,15 +50,39 @@ fun BookTile(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                modifier = Modifier.padding(bottom = 4.dp).testTag("bookTitle"),
-                text = bookItem.title,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .testTag("bookTitle"),
+                    text = bookItem.title,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                IconButton(onClick = { onToggleFavorite(bookItem.id) }) {
+                    Icon(
+                        painter = painterResource(
+                            if (bookItem.isFavorite) {
+                                R.drawable.ic_favorite
+                            } else {
+                                R.drawable.ic_add_to_favorite
+                            }
+                        ),
+                        contentDescription = if (bookItem.isFavorite) {
+                            stringResource(R.string.remove_from_favorites)
+                        } else {
+                            stringResource(R.string.add_to_favorites)
+                        }
+                    )
+                }
+            }
 
             Text(
                 modifier = Modifier.testTag("authorNameTitle"),
@@ -89,5 +119,7 @@ private fun BookTilePreview() {
             languages = emptyList(),
             downloadCount = 100
         ),
-    ) {}
+        onBookClicked = {},
+        onToggleFavorite = {},
+    )
 }

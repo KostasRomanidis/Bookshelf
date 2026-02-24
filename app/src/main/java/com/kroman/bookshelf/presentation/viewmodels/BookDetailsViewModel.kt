@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.Result
 import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
+import com.kroman.bookshelf.domain.usecases.ObserveIsFavoriteUseCase
+import com.kroman.bookshelf.domain.usecases.ToggleFavoriteBookUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed interface BookDetailsUiState {
@@ -20,11 +23,24 @@ sealed interface BookDetailsUiState {
 class BookDetailsViewModel(
     private val bookId: Int,
     private val getBookDetailsUseCase: GetBookDetailsUseCase,
+    private val toggleFavoriteBookUseCase: ToggleFavoriteBookUseCase,
+    private val observeIsFavoriteUseCase: ObserveIsFavoriteUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
-    val uiState: StateFlow<BookDetailsUiState> = _uiState
+    val uiState: StateFlow<BookDetailsUiState> = _uiState.asStateFlow()
+
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            observeIsFavoriteUseCase.execute(bookId).collect { favorite ->
+                _isFavorite.value = favorite
+            }
+        }
+    }
 
     fun getBookDetails() {
         viewModelScope.launch(dispatcher) {
@@ -39,6 +55,12 @@ class BookDetailsViewModel(
                         BookDetailsUiState.Error(result.exception.message ?: "Unknown error")
                 }
             }
+        }
+    }
+
+    fun toggleFavorite() {
+        viewModelScope.launch(dispatcher) {
+            toggleFavoriteBookUseCase.execute(bookId)
         }
     }
 }

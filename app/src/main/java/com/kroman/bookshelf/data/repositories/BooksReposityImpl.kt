@@ -58,6 +58,29 @@ class BooksRepositoryImpl(
         }
     }
 
+    override fun getFavoriteBooksPaged(): Flow<PagingData<BookItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 32,
+                prefetchDistance = 2,
+                initialLoadSize = 32,
+                enablePlaceholders = false,
+            ),
+            pagingSourceFactory = { bookDao.getFavoriteBooksPaged() }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain(bookDao = bookDao) }
+        }
+    }
+
+    override suspend fun toggleFavorite(bookId: Int) {
+        val current = bookDao.getIsFavorite(bookId) ?: return
+        bookDao.updateFavorite(bookId = bookId, value = !current)
+    }
+
+    override fun observeIsFavorite(bookId: Int): Flow<Boolean> {
+        return bookDao.observeIsFavorite(bookId).map { it ?: false }
+    }
+
     override suspend fun getBook(id: Int): Result<BookItem> {
         return try {
             val cached = booksLocalSource.getBook(id)
@@ -77,7 +100,9 @@ class BooksRepositoryImpl(
             val translators = bookResponse.translators.map { it.toEntity() }
 
             bookDao.insertBookWithRelations(bookEntity, authors, translators)
-            Result.Success(bookResponse.mapToDomain())
+            val updatedBook = booksLocalSource.getBook(id)
+                ?: return Result.Error(Exception("Book not found in local storage"))
+            Result.Success(updatedBook)
         } catch (e: IOException) {
             Result.Error(exception = e)
         } catch (e: HttpException) {

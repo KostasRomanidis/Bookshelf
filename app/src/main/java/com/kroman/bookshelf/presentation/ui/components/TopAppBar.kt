@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kroman.bookshelf.R
+import com.kroman.bookshelf.navigation.FavoritesScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +27,16 @@ fun BookshelfTopAppBar(title: String, showBackButton: Boolean = false, navContro
                     Icon(
                         painter = painterResource(R.drawable.arrow_back_icon),
                         contentDescription = "Back"
+                    )
+                }
+            }
+        },
+        actions = {
+            if (!showBackButton) {
+                IconButton(onClick = { navController.navigate(FavoritesScreen) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_favorite),
+                        contentDescription = "Favorites"
                     )
                 }
             }

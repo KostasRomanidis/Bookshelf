@@ -8,5 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface BooksRepository {
     suspend fun getBooks(): Result<List<BookItem>>
     fun getPagedBooks(): Flow<PagingData<BookItem>>
+    fun getFavoriteBooksPaged(): Flow<PagingData<BookItem>>
+    suspend fun toggleFavorite(bookId: Int)
+    fun observeIsFavorite(bookId: Int): Flow<Boolean>
     suspend fun getBook(id: Int): Result<BookItem>
 }

@@ -1,4 +1,4 @@
-package com.kroman.bookshelf.presentation.ui.screens
+    package com.kroman.bookshelf.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,19 +26,19 @@ import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.PersonItem
 import com.kroman.bookshelf.presentation.ui.components.BookTile
 import com.kroman.bookshelf.presentation.ui.components.Loading
-import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
+import com.kroman.bookshelf.presentation.viewmodels.FavoritesViewModel
 import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BooksScreen(
+fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    viewModel: BooksViewModel = koinViewModel(),
+    viewModel: FavoritesViewModel = koinViewModel(),
     onNavigateToDetails: (BookItem) -> Unit,
 ) {
     val pagedBooks = viewModel.books.collectAsLazyPagingItems()
 
-    BooksList(
+    FavoritesList(
         modifier = modifier,
         pagedBooks = pagedBooks,
         onNavigateToDetails = onNavigateToDetails,
@@ -47,7 +47,7 @@ fun BooksScreen(
 }
 
 @Composable
-private fun BooksList(
+private fun FavoritesList(
     modifier: Modifier = Modifier,
     pagedBooks: LazyPagingItems<BookItem>,
     onNavigateToDetails: (BookItem) -> Unit,
@@ -63,7 +63,8 @@ private fun BooksList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            count = pagedBooks.itemCount, key = { index -> pagedBooks[index]?.id ?: index }
+            count = pagedBooks.itemCount,
+            key = { index -> pagedBooks[index]?.id ?: index }
         ) { index ->
             val book = pagedBooks[index]
             book?.let {
@@ -74,12 +75,11 @@ private fun BooksList(
                 )
             }
         }
+
         pagedBooks.apply {
             when {
                 loadState.refresh is LoadState.Loading -> {
-                    item {
-                        Loading()
-                    }
+                    item { Loading() }
                 }
 
                 loadState.append is LoadState.Loading -> {
@@ -135,57 +135,46 @@ private fun BooksList(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-private fun BooksListPreview() {
+private fun FavoritesListPreview() {
     val books = listOf(
         BookItem(
             id = 1,
-            title = "Book Title",
+            title = "Favorite Book One",
             authors = listOf(
                 PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
+                    name = "Author One",
+                    yearOfBirth = 1900,
+                    yearOfDeath = 1980
                 )
             ),
             subjects = emptyList(),
             languages = emptyList(),
-            downloadCount = 100
+            downloadCount = 100,
+            isFavorite = true,
         ),
         BookItem(
             id = 2,
-            title = "Book Title",
+            title = "Favorite Book Two",
             authors = listOf(
                 PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
+                    name = "Author Two",
+                    yearOfBirth = 1920,
+                    yearOfDeath = 1999
                 )
             ),
             subjects = emptyList(),
             languages = emptyList(),
-            downloadCount = 100
-        ),
-        BookItem(
-            id = 3,
-            title = "Book Title",
-            authors = listOf(
-                PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
-                )
-            ),
-            subjects = emptyList(),
-            languages = emptyList(),
-            downloadCount = 100
-        ),
+            downloadCount = 80,
+            isFavorite = true,
+        )
     )
+
     val pagingFlow = flowOf(PagingData.from(books))
     val lazyPagingItems = pagingFlow.collectAsLazyPagingItems()
-    BooksList(
+
+    FavoritesList(
         modifier = Modifier,
         pagedBooks = lazyPagingItems,
         onNavigateToDetails = {},

@@ -15,7 +15,7 @@ fun BookResponse.toEntity(serverOrder: Long): BookEntity = BookEntity(
     subjects = subjects.joinToString(","),
     languages = languages.joinToString(","),
     downloadCount = downloadCount,
-    serverOrder = serverOrder
+    serverOrder = serverOrder,
 )
 
 fun PersonResponse.toEntity(): PersonEntity = PersonEntity(
@@ -33,7 +33,8 @@ suspend fun BookEntity.toDomain(bookDao: BookDao): BookItem {
         authors = authors.map { it.toDomain() },
         subjects = subjects.split(",").filter { it.isNotEmpty() },
         languages = languages.split(",").filter { it.isNotEmpty() },
-        downloadCount = downloadCount
+        downloadCount = downloadCount,
+        isFavorite = isFavorite,
     )
 }
 
@@ -42,4 +43,3 @@ fun PersonEntity.toDomain(): PersonItem = PersonItem(
     yearOfBirth = yearOfBirth,
     yearOfDeath = yearOfDeath
 )
-

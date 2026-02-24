@@ -7,6 +7,7 @@ data class BookItem(
     val subjects: List<String>,
     val languages: List<String>,
     val downloadCount: Int,
+    val isFavorite: Boolean = false,
 )
 
 data class PersonItem(

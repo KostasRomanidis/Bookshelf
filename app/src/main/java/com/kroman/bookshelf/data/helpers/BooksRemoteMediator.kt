@@ -64,7 +64,6 @@ class BooksRemoteMediator(
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     remoteKeyDao.clearAll()
-                    bookDao.clearAllBooks()
                 }
 
                 val nextPage = response.body()?.next?.let { nextUrl ->

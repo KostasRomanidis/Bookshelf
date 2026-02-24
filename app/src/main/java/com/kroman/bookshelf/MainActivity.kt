@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kroman.bookshelf.navigation.BookDetails
 import com.kroman.bookshelf.navigation.BookshelfNavHost
+import com.kroman.bookshelf.navigation.FavoritesScreen
 import com.kroman.bookshelf.presentation.ui.components.BookshelfTopAppBar
 import com.kroman.bookshelf.presentation.ui.theme.BookshelfTheme
 
@@ -30,9 +31,11 @@ class MainActivity : ComponentActivity() {
                 val backStackEntry by navController.currentBackStackEntryAsState()
                 val destination = backStackEntry?.destination
 
-                val showBackButton = destination?.hasRoute<BookDetails>() == true
+                val showBackButton =
+                    destination?.hasRoute<BookDetails>() == true || destination?.hasRoute<FavoritesScreen>() == true
                 val title = when {
                     destination?.hasRoute<BookDetails>() == true -> stringResource(R.string.book_details_title)
+                    destination?.hasRoute<FavoritesScreen>() == true -> stringResource(R.string.favorites_title)
                     else -> stringResource(R.string.app_name)
                 }
                 Scaffold(

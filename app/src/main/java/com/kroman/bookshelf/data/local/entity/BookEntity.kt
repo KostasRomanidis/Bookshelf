@@ -11,5 +11,6 @@ data class BookEntity(
     val languages: String,
     val downloadCount: Int,
     val serverOrder: Long,
+    val isFavorite: Boolean = false,
     val lastUpdated: Long = System.currentTimeMillis()
 )

@@ -15,6 +15,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +48,7 @@ fun BookDetailsScreen(
     viewModel: BookDetailsViewModel = koinViewModel(parameters = { parametersOf(bookId) })
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getBookDetails()
@@ -52,14 +56,22 @@ fun BookDetailsScreen(
 
     when (val state = uiState) {
         BookDetailsUiState.Loading -> Loading()
-        is BookDetailsUiState.Success -> BookDetails(item = state.book)
+        is BookDetailsUiState.Success -> BookDetails(
+            item = state.book,
+            isFavorite = isFavorite,
+            onToggleFavorite = viewModel::toggleFavorite
+        )
         is BookDetailsUiState.Error -> ErrorScreen(errorMessage = state.message)
     }
 }
 
 
 @Composable
-fun BookDetails(item: BookItem) {
+fun BookDetails(
+    item: BookItem,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,14 +95,28 @@ fun BookDetails(item: BookItem) {
                     .wrapContentSize()
                     .padding(all = 16.dp)
             ) {
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    IconButton(onClick = onToggleFavorite) {
+                        Icon(
+                            painter = painterResource(
+                                if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_add_to_favorite
+                            ),
+                            contentDescription = if (isFavorite) "Favorite" else "Add to favorites"
+                        )
+                    }
+                }
                 Text(
                     text = if (item.authors.isNotEmpty()) item.authors[0].name else stringResource(R.string.book_author_unknown),
                     style = MaterialTheme.typography.titleLarge.copy(
@@ -160,6 +186,9 @@ private fun BookDetailsScreenPreview() {
             ),
             languages = listOf(),
             downloadCount = 195270,
-        )
+            isFavorite = false,
+        ),
+        isFavorite = false,
+        onToggleFavorite = {}
     )
 }
