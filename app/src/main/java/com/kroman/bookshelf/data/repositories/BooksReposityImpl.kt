@@ -14,6 +14,7 @@ import com.kroman.bookshelf.data.local.mappers.toEntity
 import com.kroman.bookshelf.data.local.sources.BooksLocalSource
 import com.kroman.bookshelf.data.remote.responses.mapToDomain
 import com.kroman.bookshelf.data.remote.sources.BooksRemoteSource
+import com.kroman.bookshelf.domain.model.BookFilters
 import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.Result
 import com.kroman.bookshelf.domain.repositories.BooksRepository
@@ -53,6 +54,31 @@ class BooksRepositoryImpl(
                 database = bookshelfDatabase
             ),
             pagingSourceFactory = { booksLocalSource.getAllBooksPaged() }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain(bookDao = bookDao) }
+        }
+    }
+
+    override fun getFilteredBooksPaged(filters: BookFilters): Flow<PagingData<BookItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 32,
+                prefetchDistance = 2,
+                initialLoadSize = 32,
+                enablePlaceholders = false,
+            ),
+            remoteMediator = BooksRemoteMediator(
+                booksRemoteDataSource,
+                database = bookshelfDatabase
+            ),
+            pagingSourceFactory = {
+                bookDao.getFilteredBooksPaged(
+                    searchQuery = filters.searchQuery.trim(),
+                    language = filters.language,
+                    format = filters.format?.name,
+                    sort = filters.sort.name
+                )
+            }
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain(bookDao = bookDao) }
         }

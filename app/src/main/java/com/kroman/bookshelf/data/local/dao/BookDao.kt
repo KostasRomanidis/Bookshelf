@@ -23,6 +23,44 @@ interface BookDao {
     fun getFavoriteBooksPaged(): PagingSource<Int, BookEntity>
 
     @Transaction
+    @Query(
+        """
+        SELECT b.* FROM books b
+        WHERE (
+            :searchQuery = '' OR
+            b.title LIKE '%' || :searchQuery || '%' COLLATE NOCASE OR
+            b.subjects LIKE '%' || :searchQuery || '%' COLLATE NOCASE OR
+            EXISTS (
+                SELECT 1
+                FROM book_person_cross_ref bpr
+                INNER JOIN persons p ON p.personId = bpr.personId
+                WHERE bpr.bookId = b.id
+                  AND bpr.type = 'AUTHOR'
+                  AND p.name LIKE '%' || :searchQuery || '%' COLLATE NOCASE
+            )
+        )
+        AND (:language IS NULL OR b.language = :language)
+        AND (
+            :format IS NULL OR
+            (:format = 'EPUB' AND b.hasEpub = 1) OR
+            (:format = 'HTML' AND b.hasHtml = 1) OR
+            (:format = 'PDF' AND b.hasPdf = 1)
+        )
+        ORDER BY
+            CASE WHEN :sort = 'DOWNLOAD_COUNT_DESC' THEN b.downloadCount END DESC,
+            CASE WHEN :sort = 'TITLE_ASC' THEN b.title END COLLATE NOCASE ASC,
+            CASE WHEN :sort = 'DEFAULT' THEN b.serverOrder END ASC,
+            b.serverOrder ASC
+        """
+    )
+    fun getFilteredBooksPaged(
+        searchQuery: String,
+        language: String?,
+        format: String?,
+        sort: String
+    ): PagingSource<Int, BookEntity>
+
+    @Transaction
     @Query("SELECT * FROM books WHERE id = :bookId")
     suspend fun getBookById(bookId: Int): BookEntity?
 

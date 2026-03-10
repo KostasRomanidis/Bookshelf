@@ -15,6 +15,8 @@ import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
 import com.kroman.bookshelf.domain.usecases.GetBooksUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCase
 import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.GetFilteredBooksPagingUseCase
+import com.kroman.bookshelf.domain.usecases.GetFilteredBooksPagingUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetPagedBooksUseCase
 import com.kroman.bookshelf.domain.usecases.GetPagedBooksUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.ObserveIsFavoriteUseCase
@@ -40,6 +42,7 @@ val bookshelfModule = module {
     // usecases
     factoryOf(::GetBooksUseCaseImpl) { bind<GetBooksUseCase>() }
     factoryOf(::GetPagedBooksUseCaseImpl) { bind<GetPagedBooksUseCase>() }
+    factoryOf(::GetFilteredBooksPagingUseCaseImpl) { bind<GetFilteredBooksPagingUseCase>() }
     factoryOf(::GetBookDetailsUseCaseImpl) { bind<GetBookDetailsUseCase>() }
     factoryOf(::GetFavoriteBooksPagingUseCaseImpl) { bind<GetFavoriteBooksPagingUseCase>() }
     factoryOf(::ObserveIsFavoriteUseCaseImpl) { bind<ObserveIsFavoriteUseCase>() }
