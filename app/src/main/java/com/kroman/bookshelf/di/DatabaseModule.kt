@@ -11,7 +11,8 @@ val databaseModule = module {
             androidContext(),
             BookshelfDatabase::class.java,
             "books_database"
-        ).build()
+        ).addMigrations(BookshelfDatabase.MIGRATION_1_2)
+            .build()
     }
 
     single { get<BookshelfDatabase>().bookDao() }

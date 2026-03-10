@@ -10,8 +10,13 @@ data class BookResponse(
     val title: String,
     val subjects: List<String>,
     val authors: List<PersonResponse>,
+    val summaries: List<String> = emptyList(),
     val translators: List<PersonResponse>,
+    val bookshelves: List<String> = emptyList(),
     val languages: List<String>,
+    val copyright: Boolean? = null,
+    @SerialName("media_type") val mediaType: String = "",
+    val formats: Map<String, String> = emptyMap(),
     @SerialName("download_count") val downloadCount: Int
 )
 

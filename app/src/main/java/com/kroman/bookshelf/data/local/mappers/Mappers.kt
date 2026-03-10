@@ -14,9 +14,19 @@ fun BookResponse.toEntity(serverOrder: Long): BookEntity = BookEntity(
     title = title,
     subjects = subjects.joinToString(","),
     languages = languages.joinToString(","),
+    language = languages.firstOrNull(),
+    hasEpub = hasFormat("application/epub+zip"),
+    hasHtml = hasFormat("text/html"),
+    hasPdf = hasFormat("application/pdf"),
     downloadCount = downloadCount,
     serverOrder = serverOrder,
 )
+
+private fun BookResponse.hasFormat(keyPrefix: String): Boolean {
+    return formats.any { (key, value) ->
+        key.startsWith(keyPrefix) && value.isNotBlank()
+    }
+}
 
 fun PersonResponse.toEntity(): PersonEntity = PersonEntity(
     name = name,

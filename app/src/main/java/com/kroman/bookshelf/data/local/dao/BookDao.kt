@@ -65,8 +65,15 @@ interface BookDao {
         authors: List<PersonEntity>,
         translators: List<PersonEntity>
     ) {
-        val preservedFavorite = getIsFavorite(book.id) ?: false
-        insertBooks(listOf(book.copy(isFavorite = preservedFavorite)))
+        val existingBook = getBookById(book.id)
+        insertBooks(
+            listOf(
+                book.copy(
+                    isFavorite = existingBook?.isFavorite ?: false,
+                    lastUpdated = existingBook?.lastUpdated ?: book.lastUpdated
+                )
+            )
+        )
 
         val authorRefs = mutableListOf<BookPersonCrossRef>()
         authors.forEach { author ->
