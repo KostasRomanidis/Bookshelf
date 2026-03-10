@@ -50,7 +50,7 @@ val bookshelfModule = module {
 
     // viewModels
     viewModel {
-        BooksViewModel(getPagedBooksUseCase = get(), toggleFavoriteBookUseCase = get())
+        BooksViewModel(getFilteredBooksPagingUseCase = get(), toggleFavoriteBookUseCase = get())
     }
 
     viewModel { (bookId: Int) ->
