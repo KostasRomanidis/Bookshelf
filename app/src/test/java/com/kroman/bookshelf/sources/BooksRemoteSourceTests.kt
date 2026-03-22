@@ -3,11 +3,11 @@ package com.kroman.bookshelf.sources
 import com.kroman.bookshelf.data.remote.responses.BookResponse
 import com.kroman.bookshelf.data.remote.api.BooksApi
 import com.kroman.bookshelf.data.remote.responses.BooksResponse
+import com.kroman.bookshelf.data.remote.responses.PersonResponse
 import com.kroman.bookshelf.data.remote.sources.BooksRemoteSourceImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -49,16 +49,21 @@ class BooksRemoteSourceTests {
 
     @Test
     fun `test getBook(id)`() = runTest {
-        // when
         val id = 42
-        val payload: BookResponse = mockk()
-        every { payload.id } returns id
-        every { payload.title } returns "The Answer"
+        val payload = BookResponse(
+            id = id,
+            title = "The Answer",
+            authors = listOf(PersonResponse(yearOfBirth = 1900, yearOfDeath = null, name = "Author")),
+            subjects = listOf("Fiction"),
+            translators = emptyList(),
+            languages = listOf("en"),
+            downloadCount = 10
+        )
         val success = Response.success(payload)
         coEvery { booksApiMock.getBook(id) } returns success
 
         // when
-        val result = booksApiMock.getBook(id)
+        val result = remoteSource.getBook(id)
 
         // then
         assertTrue(result.isSuccessful)
@@ -106,4 +111,3 @@ class BooksRemoteSourceTests {
         confirmVerified(booksApiMock)
     }
 }
-

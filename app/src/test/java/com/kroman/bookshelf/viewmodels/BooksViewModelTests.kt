@@ -1,16 +1,23 @@
 package com.kroman.bookshelf.viewmodels
 
+import androidx.paging.PagingData
 import app.cash.turbine.test
-import com.kroman.bookshelf.domain.model.BookItem
-import com.kroman.bookshelf.presentation.viewmodels.BooksUiState
+import com.kroman.bookshelf.domain.model.BookFilters
+import com.kroman.bookshelf.domain.model.BookFormatFilter
+import com.kroman.bookshelf.domain.model.BookSortOption
+import com.kroman.bookshelf.domain.usecases.GetFilteredBooksPagingUseCase
+import com.kroman.bookshelf.domain.usecases.ToggleFavoriteBookUseCase
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
-import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
-import com.kroman.bookshelf.domain.model.Result
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -20,11 +27,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BooksViewModelTests {
-    private val getBooksUseCaseMock: GetBooksUseCase = mockk()
+
+    private val getFilteredBooksPagingUseCase: GetFilteredBooksPagingUseCase = mockk()
+    private val toggleFavoriteBookUseCase: ToggleFavoriteBookUseCase = mockk()
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: BooksViewModel
@@ -32,7 +40,13 @@ class BooksViewModelTests {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = BooksViewModel(getBooksUseCaseMock, testDispatcher)
+        every { getFilteredBooksPagingUseCase.execute(any()) } returns flowOf(PagingData.empty())
+        coEvery { toggleFavoriteBookUseCase.execute(any()) } returns Unit
+        viewModel = BooksViewModel(
+            getFilteredBooksPagingUseCase = getFilteredBooksPagingUseCase,
+            toggleFavoriteBookUseCase = toggleFavoriteBookUseCase,
+            dispatcher = testDispatcher
+        )
     }
 
     @After
@@ -42,92 +56,66 @@ class BooksViewModelTests {
     }
 
     @Test
-    fun `test initial state`() = runTest(testDispatcher) {
-        // when
-        viewModel.uiState.test {
-            // then
-            assertIs<BooksUiState.Loading>(awaitItem())
-        }
+    fun `initial filters are default`() = runTest(testDispatcher) {
+        assertEquals(BookFilters(), viewModel.filters.value)
     }
 
     @Test
-    fun `test loadBooks() on success result`() =
-        runTest(testDispatcher) {
-            // given
-            val books = listOf(
-                BookItem(
-                    id = 1,
-                    title = "Book 1",
-                    authors = emptyList(),
-                    subjects = emptyList(),
-                    languages = listOf("en"),
-                    downloadCount = 10
-                ),
-                BookItem(
-                    id = 2,
-                    title = "Book 2",
-                    authors = emptyList(),
-                    subjects = emptyList(),
-                    languages = listOf("en"),
-                    downloadCount = 5
-                )
-            )
-            coEvery { getBooksUseCaseMock.execute() } returns Result.Success(books)
+    fun `filter actions update state`() = runTest(testDispatcher) {
+        viewModel.updateSearchQuery("cities")
+        viewModel.selectLanguage("en")
+        viewModel.selectFormat(BookFormatFilter.EPUB)
+        viewModel.selectSort(BookSortOption.DOWNLOAD_COUNT_DESC)
 
-            // when
-            viewModel.loadBooks()
-            runCurrent()
+        assertEquals(
+            BookFilters(
+                searchQuery = "cities",
+                language = "en",
+                format = BookFormatFilter.EPUB,
+                sort = BookSortOption.DOWNLOAD_COUNT_DESC
+            ),
+            viewModel.filters.value
+        )
 
-            // then
-            viewModel.uiState.test {
-                with(awaitItem()) {
-                    assertIs<BooksUiState.Success>(this)
-                    assertEquals(books, this.books)
-                }
-            }
-        }
+        viewModel.clearFilters()
+        assertEquals(BookFilters(), viewModel.filters.value)
+    }
 
     @Test
-    fun `test loadBooks() on error`() = runTest {
-        // given
-        val exception = IllegalStateException("Network failure")
-        coEvery { getBooksUseCaseMock.execute() } returns Result.Error(exception = exception)
+    fun `books flow re-queries use case when filters change`() = runTest(testDispatcher) {
+        val collectJob = launch {
+            viewModel.books.test {
+                awaitItem()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+        runCurrent()
+        verify(exactly = 1) { getFilteredBooksPagingUseCase.execute(BookFilters()) }
 
-        // when
-        viewModel.loadBooks()
+        viewModel.updateSearchQuery("dickens")
+        val secondCollectJob = launch {
+            viewModel.books.test {
+                awaitItem()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
         runCurrent()
 
-        viewModel.uiState.test {
-            // then
-            with(awaitItem()) {
-                assertIs<BooksUiState.Error>(this)
-                assertEquals("Network failure", this.message)
-            }
+        verify(exactly = 1) {
+            getFilteredBooksPagingUseCase.execute(
+                match { it.searchQuery == "dickens" }
+            )
         }
+
+        collectJob.cancel()
+        secondCollectJob.cancel()
     }
 
     @Test
-    fun `test loadBooks() on loading to success`() = runTest {
-        // given
-        val bookList = listOf(BookItem(1, "One", emptyList(), emptyList(), listOf("en"), 1))
-        coEvery { getBooksUseCaseMock.execute() } returns Result.Success(bookList)
-        viewModel = BooksViewModel(getBooksUseCaseMock, testDispatcher)
+    fun `toggleFavorite delegates to use case`() = runTest(testDispatcher) {
+        viewModel.toggleFavorite(9)
+        runCurrent()
 
-        viewModel.uiState.test {
-            with(awaitItem()) {
-                assertIs<BooksUiState.Loading>(this)
-            }
-
-            // when
-            viewModel.loadBooks()
-            runCurrent()
-
-            // then
-            with(awaitItem()) {
-                assertIs<BooksUiState.Success>(this)
-                assertEquals(bookList, this.books)
-            }
-            cancelAndIgnoreRemainingEvents()
-        }
+        coVerify(exactly = 1) { toggleFavoriteBookUseCase.execute(9) }
     }
 }
