@@ -22,4 +22,5 @@
     <string name="filters_sort_title">Title (A-Z)</string>
     <string name="filters_clear">Clear</string>
     <string name="filters_apply">Apply</string>
+    <string name="back_to_top_content_description">Back to top</string>
 </resources>
