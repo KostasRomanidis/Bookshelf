@@ -193,7 +193,7 @@ Fallback:
 
 * Display → SemiBold
 * Headline → Medium
-* Body → Regular
+* Body ![img.png](img.png)→ Regular
 * Label → Medium
 
 ### Guidelines
