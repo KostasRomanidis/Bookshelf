@@ -181,6 +181,60 @@ val Typography = Typography(
     )
 )
 ```
+## Font Family (Android)
+
+Primary font: **Inter**
+
+Fallback:
+
+* Roboto (system default)
+
+### Usage
+
+* Display → SemiBold
+* Headline → Medium
+* Body → Regular
+* Label → Medium
+
+### Guidelines
+
+* Use a single font family across the app
+* Prefer weight variation over mixing fonts
+* Maintain readability over stylistic choices
+* Avoid overly tight letter spacing except for display text
+
+---
+
+## Compose Font Mapping
+
+```kotlin
+val AppFontFamily = FontFamily(
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold)
+)
+```
+
+Apply this font family in Typography.
+
+---
+
+## Typography Integration
+
+All typography styles should use `AppFontFamily`.
+
+Example:
+
+```kotlin
+displayLarge = TextStyle(
+    fontFamily = AppFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 32.sp,
+    lineHeight = 38.sp,
+    letterSpacing = (-0.5).sp
+)
+```
+
 
 Guidelines:
 
