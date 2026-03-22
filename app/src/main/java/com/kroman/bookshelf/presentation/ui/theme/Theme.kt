@@ -8,7 +8,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
@@ -41,9 +40,9 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val BookshelfShapes = Shapes(
-    small = RoundedCornerShape(6.dp),
-    medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(16.dp)
+    small = RoundedCornerShape(Radius.sm),
+    medium = RoundedCornerShape(Radius.md),
+    large = RoundedCornerShape(Radius.lg)
 )
 
 @Composable
