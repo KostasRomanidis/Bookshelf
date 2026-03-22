@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,9 +58,13 @@ fun BookTile(
             ) {
                 Text(
                     modifier = Modifier
+                        .weight(1f)
                         .padding(bottom = 4.dp)
+                        .padding(end = 8.dp)
                         .testTag("bookTitle"),
                     text = bookItem.title,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
@@ -68,6 +74,7 @@ fun BookTile(
 
                 IconButton(onClick = { onToggleFavorite(bookItem.id) }) {
                     Icon(
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(
                             if (bookItem.isFavorite) {
                                 R.drawable.ic_favorite
