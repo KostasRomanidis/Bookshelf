@@ -14,8 +14,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -23,12 +29,15 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.kroman.bookshelf.domain.model.BookItem
+import com.kroman.bookshelf.domain.model.BookFilters
 import com.kroman.bookshelf.domain.model.PersonItem
 import com.kroman.bookshelf.presentation.ui.components.BookTile
+import com.kroman.bookshelf.presentation.ui.components.BooksFilterSheet
 import com.kroman.bookshelf.presentation.ui.components.Loading
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
 import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
+import com.kroman.bookshelf.R
 
 @Composable
 fun BooksScreen(
@@ -37,13 +46,48 @@ fun BooksScreen(
     onNavigateToDetails: (BookItem) -> Unit,
 ) {
     val pagedBooks = viewModel.books.collectAsLazyPagingItems()
+    val filters by viewModel.filters.collectAsState()
+    var showFilters by remember { mutableStateOf(false) }
 
-    BooksList(
-        modifier = modifier,
-        pagedBooks = pagedBooks,
-        onNavigateToDetails = onNavigateToDetails,
-        onToggleFavorite = viewModel::toggleFavorite,
-    )
+    Column(modifier = modifier.fillMaxSize()) {
+        Button(
+            onClick = { showFilters = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(text = stringResource(R.string.filters_button))
+        }
+
+        BooksList(
+            modifier = Modifier.weight(1f),
+            pagedBooks = pagedBooks,
+            onNavigateToDetails = onNavigateToDetails,
+            onToggleFavorite = viewModel::toggleFavorite,
+        )
+    }
+
+    if (showFilters) {
+        BooksFilterSheet(
+            filters = filters,
+            onDismiss = { showFilters = false },
+            onApply = { updated ->
+                applyFilters(viewModel = viewModel, filters = updated)
+                showFilters = false
+            },
+            onClear = viewModel::clearFilters
+        )
+    }
+}
+
+private fun applyFilters(
+    viewModel: BooksViewModel,
+    filters: BookFilters
+) {
+    viewModel.updateSearchQuery(filters.searchQuery)
+    viewModel.selectLanguage(filters.language)
+    viewModel.selectFormat(filters.format)
+    viewModel.selectSort(filters.sort)
 }
 
 @Composable

@@ -7,4 +7,19 @@
     <string name="add_to_favorites">Add to favorites</string>
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="favorites_title">Favorites</string>
+    <string name="filters_button">Filters</string>
+    <string name="filters_title">Filter books</string>
+    <string name="filters_search">Search</string>
+    <string name="filters_language">Language code (e.g., en)</string>
+    <string name="filters_format">Format</string>
+    <string name="filters_format_any">Any</string>
+    <string name="filters_format_epub">EPUB</string>
+    <string name="filters_format_html">HTML</string>
+    <string name="filters_format_pdf">PDF</string>
+    <string name="filters_sort">Sort</string>
+    <string name="filters_sort_default">Default</string>
+    <string name="filters_sort_download_count">Most downloaded</string>
+    <string name="filters_sort_title">Title (A-Z)</string>
+    <string name="filters_clear">Clear</string>
+    <string name="filters_apply">Apply</string>
 </resources>

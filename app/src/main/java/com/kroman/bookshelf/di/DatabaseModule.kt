@@ -11,7 +11,11 @@ val databaseModule = module {
             androidContext(),
             BookshelfDatabase::class.java,
             "books_database"
-        ).addMigrations(BookshelfDatabase.MIGRATION_1_2)
+        ).addMigrations(
+            BookshelfDatabase.MIGRATION_1_2,
+            BookshelfDatabase.MIGRATION_2_3,
+            BookshelfDatabase.MIGRATION_3_4
+        )
             .build()
     }
 

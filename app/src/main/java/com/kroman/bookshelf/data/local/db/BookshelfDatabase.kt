@@ -20,7 +20,7 @@ import com.kroman.bookshelf.data.local.entity.RemoteKeyEntity
         BookPersonCrossRef::class,
         RemoteKeyEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -45,6 +45,21 @@ abstract class BookshelfDatabase : RoomDatabase() {
                     END
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE books ADD COLUMN summaries TEXT NOT NULL DEFAULT '[]'")
+                db.execSQL("ALTER TABLE books ADD COLUMN bookshelves TEXT NOT NULL DEFAULT '[]'")
+                db.execSQL("ALTER TABLE books ADD COLUMN mediaType TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE books ADD COLUMN copyright INTEGER")
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE books ADD COLUMN formats TEXT NOT NULL DEFAULT '{}'")
             }
         }
     }

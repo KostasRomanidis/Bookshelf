@@ -10,6 +10,7 @@ data class BookResponse(
     val title: String,
     val subjects: List<String>,
     val authors: List<PersonResponse>,
+    val editors: List<PersonResponse> = emptyList(),
     val summaries: List<String> = emptyList(),
     val translators: List<PersonResponse>,
     val bookshelves: List<String> = emptyList(),
