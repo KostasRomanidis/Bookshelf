@@ -50,6 +50,11 @@ suspend fun BookEntity.toDomain(bookDao: BookDao): BookItem {
         languages = languages,
         downloadCount = downloadCount,
         isFavorite = isFavorite,
+        summaries = summaries,
+        bookshelves = bookshelves,
+        copyright = copyright,
+        formats = formats,
+        mediaType = mediaType,
     )
 }
 

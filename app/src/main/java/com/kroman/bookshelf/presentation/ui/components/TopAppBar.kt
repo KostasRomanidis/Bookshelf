@@ -25,7 +25,7 @@ fun BookshelfTopAppBar(title: String, showBackButton: Boolean = false, navContro
             if (showBackButton) {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
-                        painter = painterResource(R.drawable.arrow_back_icon),
+                        painter = painterResource(R.drawable.ic_back_arrow),
                         contentDescription = "Back"
                     )
                 }
@@ -35,7 +35,7 @@ fun BookshelfTopAppBar(title: String, showBackButton: Boolean = false, navContro
             if (!showBackButton) {
                 IconButton(onClick = { navController.navigate(FavoritesScreen) }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_favorite),
+                        painter = painterResource(R.drawable.ic_add_to_favorite),
                         contentDescription = "Favorites"
                     )
                 }

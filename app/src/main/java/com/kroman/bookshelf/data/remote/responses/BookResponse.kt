@@ -29,4 +29,9 @@ fun BookResponse.mapToDomain(): BookItem = BookItem(
     subjects = this.subjects,
     languages = languages,
     downloadCount = downloadCount,
+    summaries = summaries,
+    bookshelves = bookshelves,
+    copyright = copyright,
+    formats = formats,
+    mediaType = mediaType,
 )

@@ -77,7 +77,7 @@ fun BookTile(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(
                             if (bookItem.isFavorite) {
-                                R.drawable.ic_favorite
+                                R.drawable.ic_add_to_favorite
                             } else {
                                 R.drawable.ic_add_to_favorite
                             }

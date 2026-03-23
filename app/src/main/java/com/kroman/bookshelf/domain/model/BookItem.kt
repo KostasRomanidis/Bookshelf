@@ -8,6 +8,11 @@ data class BookItem(
     val languages: List<String>,
     val downloadCount: Int,
     val isFavorite: Boolean = false,
+    val summaries: List<String> = emptyList(),
+    val bookshelves: List<String> = emptyList(),
+    val copyright: Boolean? = null,
+    val formats: Map<String, String> = emptyMap(),
+    val mediaType: String = "",
 )
 
 data class PersonItem(
