@@ -23,6 +23,9 @@
     <string name="book_format_action_label">GET</string>
     <string name="favorites_title">Favorites</string>
     <string name="filters_button">Filters</string>
+    <string name="curated_picks_title">Curated Picks</string>
+    <string name="curated_pick_label">DAILY RECOMMENDATION</string>
+    <string name="curated_pick_content_description">Daily recommendation: %1$s by %2$s</string>
     <string name="filters_title">Filter books</string>
     <string name="filters_search">Search</string>
     <string name="filters_language">Language code (e.g., en)</string>

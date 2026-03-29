@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,7 +38,10 @@ import com.kroman.bookshelf.domain.model.PersonItem
 import com.kroman.bookshelf.presentation.ui.components.BackToTopButton
 import com.kroman.bookshelf.presentation.ui.components.BookTile
 import com.kroman.bookshelf.presentation.ui.components.BooksFilterSheet
+import com.kroman.bookshelf.presentation.ui.components.CuratedPickTile
 import com.kroman.bookshelf.presentation.ui.components.Loading
+import com.kroman.bookshelf.presentation.ui.theme.BookshelfTheme
+import com.kroman.bookshelf.presentation.ui.theme.Dimens
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -68,6 +73,22 @@ fun BooksScreen(
             pagedBooks = pagedBooks,
             onNavigateToDetails = onNavigateToDetails,
             onToggleFavorite = viewModel::toggleFavorite,
+            headerContent = {
+                Text(
+                    text = stringResource(R.string.curated_picks_title),
+                    modifier = Modifier.padding(bottom = Dimens.spaceMd),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                CuratedPickTile(
+                    title = CURATED_PICK_TITLE,
+                    author = CURATED_PICK_AUTHOR,
+                    coverImageUrl = CURATED_PICK_COVER_URL,
+                    onClick = {},
+                    modifier = Modifier.padding(bottom = Dimens.spaceLg)
+                )
+            }
         )
     }
 
@@ -94,12 +115,18 @@ private fun applyFilters(
     viewModel.selectSort(filters.sort)
 }
 
+private const val CURATED_PICK_TITLE = "Frankenstein; Or, The Modern Prometheus"
+private const val CURATED_PICK_AUTHOR = "Mary Wollstonecraft Shelley"
+private const val CURATED_PICK_COVER_URL =
+    "https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg"
+
 @Composable
 private fun BooksList(
     modifier: Modifier = Modifier,
     pagedBooks: LazyPagingItems<BookItem>,
     onNavigateToDetails: (BookItem) -> Unit,
     onToggleFavorite: (Int) -> Unit,
+    headerContent: @Composable () -> Unit = {},
 ) {
     val lazyListState = rememberLazyListState()
     val showBackToTopButton by remember {
@@ -118,6 +145,9 @@ private fun BooksList(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item {
+                headerContent()
+            }
             items(
                 count = pagedBooks.itemCount, key = { index -> pagedBooks[index]?.id ?: index }
             ) { index ->
@@ -205,59 +235,114 @@ private fun BooksList(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 412, heightDp = 915, name = "Books Screen")
 @Composable
-private fun BooksListPreview() {
+private fun BooksScreenPreview() {
     val books = listOf(
         BookItem(
             id = 1,
-            title = "Book Title",
+            title = "The Count of Monte Cristo",
             authors = listOf(
                 PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
+                    name = "Alexandre Dumas",
+                    yearOfBirth = 1802,
+                    yearOfDeath = 1870
                 )
             ),
-            subjects = emptyList(),
-            languages = emptyList(),
-            downloadCount = 100
+            subjects = listOf("Adventure stories", "Historical fiction"),
+            languages = listOf("en"),
+            downloadCount = 8421,
+            formats = mapOf(
+                "image/jpeg" to "https://www.gutenberg.org/cache/epub/1184/pg1184.cover.medium.jpg"
+            )
         ),
         BookItem(
             id = 2,
-            title = "Book Title",
+            title = "Jane Eyre: An Autobiography",
             authors = listOf(
                 PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
+                    name = "Charlotte Bronte",
+                    yearOfBirth = 1816,
+                    yearOfDeath = 1855
                 )
             ),
-            subjects = emptyList(),
-            languages = emptyList(),
-            downloadCount = 100
+            subjects = listOf("Governesses", "Love stories"),
+            languages = listOf("en"),
+            downloadCount = 6150,
+            isFavorite = true,
+            formats = mapOf(
+                "image/jpeg" to "https://www.gutenberg.org/cache/epub/1260/pg1260.cover.medium.jpg"
+            )
         ),
         BookItem(
             id = 3,
-            title = "Book Title",
+            title = "The War of the Worlds",
             authors = listOf(
                 PersonItem(
-                    name = "Author's Name",
-                    yearOfBirth = 1984,
-                    yearOfDeath = null
+                    name = "H. G. Wells",
+                    yearOfBirth = 1866,
+                    yearOfDeath = 1946
                 )
             ),
-            subjects = emptyList(),
-            languages = emptyList(),
-            downloadCount = 100
+            subjects = listOf("Science fiction", "Mars"),
+            languages = listOf("en"),
+            downloadCount = 4912
+        ),
+        BookItem(
+            id = 4,
+            title = "A Room with a View",
+            authors = listOf(
+                PersonItem(
+                    name = "E. M. Forster",
+                    yearOfBirth = 1879,
+                    yearOfDeath = 1970
+                )
+            ),
+            subjects = listOf("Young women", "England"),
+            languages = listOf("en"),
+            downloadCount = 2187
         ),
     )
     val pagingFlow = flowOf(PagingData.from(books))
     val lazyPagingItems = pagingFlow.collectAsLazyPagingItems()
-    BooksList(
-        modifier = Modifier,
-        pagedBooks = lazyPagingItems,
-        onNavigateToDetails = {},
-        onToggleFavorite = {}
-    )
+    BookshelfTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Dimens.spaceLg, vertical = Dimens.spaceSm)
+                ) {
+                    Text(text = stringResource(R.string.filters_button))
+                }
+
+                BooksList(
+                    modifier = Modifier.weight(1f),
+                    pagedBooks = lazyPagingItems,
+                    onNavigateToDetails = {},
+                    onToggleFavorite = {},
+                    headerContent = {
+                        Text(
+                            text = stringResource(R.string.curated_picks_title),
+                            modifier = Modifier.padding(bottom = Dimens.spaceMd),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        CuratedPickTile(
+                            title = CURATED_PICK_TITLE,
+                            author = CURATED_PICK_AUTHOR,
+                            coverImageUrl = CURATED_PICK_COVER_URL,
+                            onClick = {},
+                            modifier = Modifier.padding(bottom = Dimens.spaceLg)
+                        )
+                    }
+                )
+            }
+        }
+    }
 }
