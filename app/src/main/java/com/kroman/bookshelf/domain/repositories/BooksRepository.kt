@@ -14,4 +14,5 @@ interface BooksRepository {
     suspend fun toggleFavorite(bookId: Int)
     fun observeIsFavorite(bookId: Int): Flow<Boolean>
     suspend fun getBook(id: Int): Result<BookItem>
+    suspend fun getRandomLocalBook(): BookItem?
 }

@@ -135,4 +135,8 @@ class BooksRepositoryImpl(
             Result.Error(exception = e)
         }
     }
+
+    override suspend fun getRandomLocalBook(): BookItem? {
+        return booksLocalSource.getRandomBook()
+    }
 }

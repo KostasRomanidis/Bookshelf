@@ -4,7 +4,9 @@ import androidx.paging.PagingData
 import app.cash.turbine.test
 import com.kroman.bookshelf.domain.model.BookFilters
 import com.kroman.bookshelf.domain.model.BookFormatFilter
+import com.kroman.bookshelf.domain.model.BookItem
 import com.kroman.bookshelf.domain.model.BookSortOption
+import com.kroman.bookshelf.domain.usecases.GetCuratedPickUseCase
 import com.kroman.bookshelf.domain.usecases.GetFilteredBooksPagingUseCase
 import com.kroman.bookshelf.domain.usecases.ToggleFavoriteBookUseCase
 import com.kroman.bookshelf.presentation.viewmodels.BooksViewModel
@@ -13,7 +15,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -32,6 +33,7 @@ import kotlin.test.assertEquals
 class BooksViewModelTests {
 
     private val getFilteredBooksPagingUseCase: GetFilteredBooksPagingUseCase = mockk()
+    private val getCuratedPickUseCase: GetCuratedPickUseCase = mockk()
     private val toggleFavoriteBookUseCase: ToggleFavoriteBookUseCase = mockk()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -41,12 +43,8 @@ class BooksViewModelTests {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         every { getFilteredBooksPagingUseCase.execute(any()) } returns flowOf(PagingData.empty())
+        coEvery { getCuratedPickUseCase.execute() } returns null
         coEvery { toggleFavoriteBookUseCase.execute(any()) } returns Unit
-        viewModel = BooksViewModel(
-            getFilteredBooksPagingUseCase = getFilteredBooksPagingUseCase,
-            toggleFavoriteBookUseCase = toggleFavoriteBookUseCase,
-            dispatcher = testDispatcher
-        )
     }
 
     @After
@@ -57,11 +55,32 @@ class BooksViewModelTests {
 
     @Test
     fun `initial filters are default`() = runTest(testDispatcher) {
+        initViewModel()
         assertEquals(BookFilters(), viewModel.filters.value)
     }
 
     @Test
+    fun `init loads curated pick into ui state`() = runTest(testDispatcher) {
+        val curatedPick = BookItem(
+            id = 3,
+            title = "Emma",
+            authors = emptyList(),
+            subjects = emptyList(),
+            languages = listOf("en"),
+            downloadCount = 88
+        )
+        coEvery { getCuratedPickUseCase.execute() } returns curatedPick
+        initViewModel()
+
+        runCurrent()
+
+        assertEquals(curatedPick, viewModel.uiState.value.curatedPick)
+        coVerify(exactly = 1) { getCuratedPickUseCase.execute() }
+    }
+
+    @Test
     fun `filter actions update state`() = runTest(testDispatcher) {
+        initViewModel()
         viewModel.updateSearchQuery("cities")
         viewModel.selectLanguage("en")
         viewModel.selectFormat(BookFormatFilter.EPUB)
@@ -83,6 +102,15 @@ class BooksViewModelTests {
 
     @Test
     fun `books flow re-queries use case when filters change`() = runTest(testDispatcher) {
+        val capturedFilters = mutableListOf<BookFilters>()
+        every {
+            getFilteredBooksPagingUseCase.execute(any())
+        } answers {
+            capturedFilters += invocation.args[0] as BookFilters
+            flowOf(PagingData.empty())
+        }
+
+        initViewModel()
         val collectJob = launch {
             viewModel.books.test {
                 awaitItem()
@@ -90,7 +118,6 @@ class BooksViewModelTests {
             }
         }
         runCurrent()
-        verify(exactly = 1) { getFilteredBooksPagingUseCase.execute(BookFilters()) }
 
         viewModel.updateSearchQuery("dickens")
         val secondCollectJob = launch {
@@ -101,11 +128,13 @@ class BooksViewModelTests {
         }
         runCurrent()
 
-        verify(exactly = 1) {
-            getFilteredBooksPagingUseCase.execute(
-                match { it.searchQuery == "dickens" }
-            )
-        }
+        assertEquals(
+            listOf(
+                BookFilters(),
+                BookFilters(searchQuery = "dickens")
+            ),
+            capturedFilters
+        )
 
         collectJob.cancel()
         secondCollectJob.cancel()
@@ -113,9 +142,19 @@ class BooksViewModelTests {
 
     @Test
     fun `toggleFavorite delegates to use case`() = runTest(testDispatcher) {
+        initViewModel()
         viewModel.toggleFavorite(9)
         runCurrent()
 
         coVerify(exactly = 1) { toggleFavoriteBookUseCase.execute(9) }
+    }
+
+    private fun initViewModel() {
+        viewModel = BooksViewModel(
+            getFilteredBooksPagingUseCase = getFilteredBooksPagingUseCase,
+            getCuratedPickUseCase = getCuratedPickUseCase,
+            toggleFavoriteBookUseCase = toggleFavoriteBookUseCase,
+            dispatcher = testDispatcher
+        )
     }
 }

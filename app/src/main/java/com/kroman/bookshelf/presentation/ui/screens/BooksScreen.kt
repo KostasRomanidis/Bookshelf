@@ -56,6 +56,7 @@ fun BooksScreen(
 ) {
     val pagedBooks = viewModel.books.collectAsLazyPagingItems()
     val filters by viewModel.filters.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     var showFilters by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -74,20 +75,25 @@ fun BooksScreen(
             onNavigateToDetails = onNavigateToDetails,
             onToggleFavorite = viewModel::toggleFavorite,
             headerContent = {
-                Text(
-                    text = stringResource(R.string.curated_picks_title),
-                    modifier = Modifier.padding(bottom = Dimens.spaceMd),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                val curatedPick = uiState.curatedPick
+                if (curatedPick != null) {
+                    Text(
+                        text = stringResource(R.string.curated_picks_title),
+                        modifier = Modifier.padding(bottom = Dimens.spaceMd),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
-                CuratedPickTile(
-                    title = CURATED_PICK_TITLE,
-                    author = CURATED_PICK_AUTHOR,
-                    coverImageUrl = CURATED_PICK_COVER_URL,
-                    onClick = {},
-                    modifier = Modifier.padding(bottom = Dimens.spaceLg)
-                )
+                    CuratedPickTile(
+                        title = curatedPick.title,
+                        author = curatedPick.primaryAuthor(
+                            fallback = stringResource(R.string.book_author_unknown)
+                        ),
+                        coverImageUrl = curatedPick.coverImageUrl(),
+                        onClick = { onNavigateToDetails(curatedPick) },
+                        modifier = Modifier.padding(bottom = Dimens.spaceLg)
+                    )
+                }
             }
         )
     }
@@ -114,11 +120,6 @@ private fun applyFilters(
     viewModel.selectFormat(filters.format)
     viewModel.selectSort(filters.sort)
 }
-
-private const val CURATED_PICK_TITLE = "Frankenstein; Or, The Modern Prometheus"
-private const val CURATED_PICK_AUTHOR = "Mary Wollstonecraft Shelley"
-private const val CURATED_PICK_COVER_URL =
-    "https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg"
 
 @Composable
 private fun BooksList(
@@ -334,9 +335,9 @@ private fun BooksScreenPreview() {
                         )
 
                         CuratedPickTile(
-                            title = CURATED_PICK_TITLE,
-                            author = CURATED_PICK_AUTHOR,
-                            coverImageUrl = CURATED_PICK_COVER_URL,
+                            title = "Frankenstein; Or, The Modern Prometheus",
+                            author = "Mary Wollstonecraft Shelley",
+                            coverImageUrl = "https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg",
                             onClick = {},
                             modifier = Modifier.padding(bottom = Dimens.spaceLg)
                         )
@@ -345,4 +346,14 @@ private fun BooksScreenPreview() {
             }
         }
     }
+}
+
+private fun BookItem.primaryAuthor(fallback: String): String {
+    return authors.firstOrNull()?.name?.takeIf { it.isNotBlank() } ?: fallback
+}
+
+private fun BookItem.coverImageUrl(): String? {
+    return formats.entries.firstOrNull { (key, value) ->
+        key.startsWith("image/jpeg") && value.isNotBlank()
+    }?.value
 }

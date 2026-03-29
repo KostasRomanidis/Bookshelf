@@ -9,6 +9,7 @@ import com.kroman.bookshelf.domain.model.BookItem
 interface BooksLocalSource {
     fun getAllBooksPaged(): PagingSource<Int, BookEntity>
     suspend fun getBook(id: Int): BookItem?
+    suspend fun getRandomBook(): BookItem?
 }
 
 class BooksLocalSourceImpl(
@@ -23,4 +24,8 @@ class BooksLocalSourceImpl(
         return book?.toDomain(bookDao)
     }
 
+    override suspend fun getRandomBook(): BookItem? {
+        val book = bookDao.getRandomBook()
+        return book?.toDomain(bookDao)
+    }
 }

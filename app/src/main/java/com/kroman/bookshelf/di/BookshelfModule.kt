@@ -13,6 +13,8 @@ import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCase
 import com.kroman.bookshelf.domain.usecases.GetBookDetailsUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetBooksUseCase
 import com.kroman.bookshelf.domain.usecases.GetBooksUseCaseImpl
+import com.kroman.bookshelf.domain.usecases.GetCuratedPickUseCase
+import com.kroman.bookshelf.domain.usecases.GetCuratedPickUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCase
 import com.kroman.bookshelf.domain.usecases.GetFavoriteBooksPagingUseCaseImpl
 import com.kroman.bookshelf.domain.usecases.GetFilteredBooksPagingUseCase
@@ -43,6 +45,7 @@ val bookshelfModule = module {
     factoryOf(::GetBooksUseCaseImpl) { bind<GetBooksUseCase>() }
     factoryOf(::GetPagedBooksUseCaseImpl) { bind<GetPagedBooksUseCase>() }
     factoryOf(::GetFilteredBooksPagingUseCaseImpl) { bind<GetFilteredBooksPagingUseCase>() }
+    singleOf(::GetCuratedPickUseCaseImpl) { bind<GetCuratedPickUseCase>() }
     factoryOf(::GetBookDetailsUseCaseImpl) { bind<GetBookDetailsUseCase>() }
     factoryOf(::GetFavoriteBooksPagingUseCaseImpl) { bind<GetFavoriteBooksPagingUseCase>() }
     factoryOf(::ObserveIsFavoriteUseCaseImpl) { bind<ObserveIsFavoriteUseCase>() }
@@ -50,7 +53,11 @@ val bookshelfModule = module {
 
     // viewModels
     viewModel {
-        BooksViewModel(getFilteredBooksPagingUseCase = get(), toggleFavoriteBookUseCase = get())
+        BooksViewModel(
+            getFilteredBooksPagingUseCase = get(),
+            getCuratedPickUseCase = get(),
+            toggleFavoriteBookUseCase = get()
+        )
     }
 
     viewModel { (bookId: Int) ->

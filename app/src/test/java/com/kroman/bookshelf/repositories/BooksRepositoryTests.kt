@@ -213,4 +213,32 @@ class BooksRepositoryTests {
         assertTrue(result is Result.Error)
         assertTrue((result as Result.Error).exception is HttpException)
     }
+
+    @Test
+    fun `getRandomLocalBook - delegates to local source and returns value unchanged`() = runTest {
+        val expected = BookItem(
+            id = 7,
+            title = "Curated Choice",
+            authors = emptyList(),
+            subjects = listOf("Classics"),
+            languages = listOf("en"),
+            downloadCount = 55
+        )
+        coEvery { booksLocalSource.getRandomBook() } returns expected
+
+        val result = bookRepository.getRandomLocalBook()
+
+        assertEquals(expected, result)
+        coVerify(exactly = 1) { booksLocalSource.getRandomBook() }
+    }
+
+    @Test
+    fun `getRandomLocalBook - delegates to local source and returns null unchanged`() = runTest {
+        coEvery { booksLocalSource.getRandomBook() } returns null
+
+        val result = bookRepository.getRandomLocalBook()
+
+        assertEquals(null, result)
+        coVerify(exactly = 1) { booksLocalSource.getRandomBook() }
+    }
 }

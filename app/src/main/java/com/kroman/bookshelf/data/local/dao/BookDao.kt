@@ -64,6 +64,10 @@ interface BookDao {
     @Query("SELECT * FROM books WHERE id = :bookId")
     suspend fun getBookById(bookId: Int): BookEntity?
 
+    @Transaction
+    @Query("SELECT * FROM books ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomBook(): BookEntity?
+
     @Query("SELECT isFavorite FROM books WHERE id = :bookId")
     suspend fun getIsFavorite(bookId: Int): Boolean?
 
