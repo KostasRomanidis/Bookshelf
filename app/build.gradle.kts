@@ -10,7 +10,7 @@ plugins {
 android {
     namespace = "com.kroman.bookshelf"
     compileSdk {
-        version = release(libs.versions.targetSdk.get().toInt())
+        version = release(libs.versions.compileSdk.get().toInt())
     }
 
     defaultConfig {
@@ -29,7 +29,9 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://gutendex.com/\"")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -80,19 +82,16 @@ dependencies {
 
     implementation(libs.room.runtime)
     ksp(libs.room.ksp)
-    implementation(libs.room.ktx)
     implementation(libs.room.paging)
 
     testImplementation(libs.junit)
-    testImplementation(libs.koin.test)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.room.testing)
 
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

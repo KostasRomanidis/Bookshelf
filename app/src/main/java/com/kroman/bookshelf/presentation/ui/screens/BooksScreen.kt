@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -228,13 +229,19 @@ private fun BooksList(
                 .padding(16.dp),
             onClick = {
                 coroutineScope.launch {
-                    lazyListState.animateScrollToItem(index = 0)
+                    lazyListState.scrollToTopWithShortAnimation()
                 }
             }
         )
     }
 }
 
+private suspend fun LazyListState.scrollToTopWithShortAnimation() {
+    if (firstVisibleItemIndex > TopScrollAnimationThreshold) {
+        scrollToItem(TopScrollAnimationThreshold)
+    }
+    animateScrollToItem(index = 0)
+}
 
 @Preview(showBackground = true, widthDp = 412, heightDp = 915, name = "Books Screen")
 @Composable
@@ -357,3 +364,5 @@ private fun BookItem.coverImageUrl(): String? {
         key.startsWith("image/jpeg") && value.isNotBlank()
     }?.value
 }
+
+private const val TopScrollAnimationThreshold = 8
